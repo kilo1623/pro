@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>¿Salimos? 💕</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #ff6b9d, #ff8fab, #ffb3c6, #ffc8dd);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Corazones cayendo ── */
+    .heart-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .heart {
+      position: absolute;
+      top: -60px;
+      font-size: 1.5rem;
+      animation: fall linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes fall {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── Tarjeta principal ── */
+    .card {
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 40px 36px;
+      max-width: 480px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(255, 100, 150, 0.35);
+      border: 2px solid rgba(255, 182, 193, 0.6);
+    }
+
+    /* ── Secciones / pasos ── */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── Foto pequeña ── */
+    .top-photo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #ff6b9d;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(255,107,157,0.4);
+    }
+
+    .top-photo-placeholder {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffb3c6, #ff6b9d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 16px auto;
+      border: 3px solid #ff6b9d;
+      box-shadow: 0 4px 16px rgba(255,107,157,0.4);
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: #c0306a;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    p {
+      color: #a0405f;
+      font-size: 1rem;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .emoji-big { font-size: 3rem; margin-bottom: 12px; display: block; }
+
+    /* ── Botones generales ── */
+    .btn {
+      display: inline-block;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      transition: all 0.3s ease;
+      margin: 6px;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, #ff6b9d, #e0396a);
+      color: white;
+      box-shadow: 0 4px 18px rgba(255,107,157,0.5);
+    }
+
+    .btn-yes:hover { transform: scale(1.07); }
+
+    .btn-no {
+      background: #f0f0f0;
+      color: #999;
+    }
+
+    .btn-next {
+      background: linear-gradient(135deg, #ff8fab, #ff6b9d);
+      color: white;
+      padding: 13px 36px;
+      font-size: 1.05rem;
+      box-shadow: 0 4px 18px rgba(255,107,157,0.4);
+    }
+
+    .btn-next:hover { transform: scale(1.05); }
+
+    /* ── Opciones de hora y comida ── */
+    .options-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .opt-btn {
+      padding: 10px 20px;
+      border: 2px solid #ff8fab;
+      border-radius: 50px;
+      background: white;
+      color: #c0306a;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.25s;
+    }
+
+    .opt-btn:hover, .opt-btn.selected {
+      background: linear-gradient(135deg, #ff6b9d, #e0396a);
+      color: white;
+      border-color: transparent;
+      transform: scale(1.06);
+    }
+
+    /* ── Sección del video ── */
+    .video-wrapper {
+      border-radius: 16px;
+      overflow: hidden;
+      margin: 16px 0;
+      box-shadow: 0 6px 24px rgba(255,107,157,0.3);
+    }
+
+    .video-wrapper video,
+    .video-wrapper iframe {
+      width: 100%;
+      border: none;
+      display: block;
+    }
+
+    .video-placeholder {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #ffb3c6, #ff6b9d);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1rem;
+      gap: 8px;
+    }
+
+    .video-placeholder span { font-size: 2.5rem; }
+
+    /* ── Final ── */
+    .final-heart {
+      font-size: 4rem;
+      animation: heartbeat 1s ease infinite;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.2); }
+    }
+
+    .love-btn {
+      background: linear-gradient(135deg, #ff3d77, #c0306a);
+      color: white;
+      font-size: 1.3rem;
+      padding: 16px 40px;
+      border-radius: 50px;
+      border: none;
+      cursor: default;
+      box-shadow: 0 6px 24px rgba(192,48,106,0.5);
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 6px 24px rgba(192,48,106,0.5); }
+      50%       { box-shadow: 0 10px 36px rgba(192,48,106,0.8); }
+    }
+
+    /* ── Confetti final ── */
+    .confetti-emoji {
+      position: fixed;
+      font-size: 2rem;
+      animation: confettiFall 3s linear infinite;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    @keyframes confettiFall {
+      0%   { transform: translateY(-60px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Corazones de fondo -->
+<div class="heart-container" id="heartContainer"></div>
+
+<!-- ════════════════════════════════
+     PASO 1 — ¿Quieres salir conmigo?
+════════════════════════════════ -->
+<div class="card">
+
+  <div class="section active" id="step1">
+
+    <!-- 📸 Cambia el src por la URL de tu foto -->
+    <img src="/meo/cat.jpg" alt="Foto" class="top-photo" />
+    <!-- Para usar una foto real descomenta la línea de abajo y comenta la de arriba:
+    <div class="top-photo-placeholder" id="photoWrapper">🌸</div>
+    -->
+
+    <h1>🌸 HOLAA MI AMOR 🌸</h1>
+    <p>Queira hacerle una pregunta muy importante y con todo el corazón…</p>
+    <p style="font-size:1.3rem; font-weight:700; color:#c0306a;">
+      ¿Quieres tener una cita conmigo? 💕
+    </p>
+
+    <div style="margin-top: 20px;">
+      <button class="btn btn-yes" id="btnYes" onclick="handleYes()">
+        Sí, claro que si mi niño hermoso 💖
+      </button>
+      <button class="btn btn-no" id="btnNo" onclick="handleNo()">
+        No, por feo 😔
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       PASO 2 — Reacción al SÍ
+  ════════════════════════════════ -->
+  <div class="section" id="step2">
+    <span class="emoji-big">🥺🎉</span>
+    <h1>En serio???</h1>
+    <p>No me lo esperaba… Creia que me ibas a decir que no 😭<br>
+        Me haces el niño más feliz del mundo 💓</p>
+    <p style="font-weight:700; color:#c0306a;">Ahora dime… ¿a qué hora le gustaria salir?</p>
+    <button class="btn btn-next" onclick="goTo('step3')">Siguiente →</button>
+  </div>
+
+  <!-- ════════════════════════════════
+       PASO 3 — ¿A qué hora?
+  ════════════════════════════════ -->
+  <div class="section" id="step3">
+    <img src="/meo/_.jpg" alt="Foto" class="top-photo" />
+    <h1>¿A qué hora salimos?</h1>
+
+    <div class="options-grid" id="horaGrid">
+      <button class="opt-btn" onclick="selectOpt(this,'hora')">4:00 pm</button>
+      <button class="opt-btn" onclick="selectOpt(this,'hora')">4:30 pm</button>
+      <button class="opt-btn" onclick="selectOpt(this,'hora')">5:00 pm</button>
+      <button class="opt-btn" onclick="selectOpt(this,'hora')">5:30 pm</button>
+      <button class="opt-btn" onclick="selectOpt(this,'hora')">6:00 pm</button>
+    </div>
+
+    <button class="btn btn-next" id="btnNextHora" disabled
+            style="opacity:0.5" onclick="goTo('step4')">
+      Siguiente →
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════
+       PASO 4 — ¿Qué te gustaría comer?
+  ════════════════════════════════ -->
+  <div class="section" id="step4">
+    <img src="/meo/924012048579720642.jpg" alt="Foto" class="top-photo" />
+    <h1>¿Qué le gustaría comer?</h1>
+
+    <div class="options-grid" id="comidaGrid">
+      <button class="opt-btn" onclick="selectOpt(this,'comida')">🍔 Hamburguesita</button>
+      <button class="opt-btn" onclick="selectOpt(this,'comida')">🍗 Boneless</button>
+      <button class="opt-btn" onclick="selectOpt(this,'comida')">🍕 Pizzita</button>
+      <button class="opt-btn" onclick="selectOpt(this,'comida')">🌮 Taquitos</button>
+    </div>
+
+    <button class="btn btn-next" id="btnNextComida" disabled
+            style="opacity:0.5" onclick="goTo('step5')">
+      Siguiente →
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════
+       PASO 5 — Video + Te amo
+  ════════════════════════════════ -->
+  <div class="section" id="step5">
+    <img src="/meo/first post!!! 🧁.jpg" alt="Foto" class="top-photo" />
+    <h1>Antes de vernos…</h1>
+    <p>mira este video tan gracioso</p>
+
+    <!-- 🎥 OPCIÓN A — Video local: cambia "tu_video.mp4" por la ruta de tu archivo -->
+    <div class="video-wrapper">
+      <video controls>
+        <source src="/meo/WhatsApp Video 2026-06-10 at 9.15.23 PM.mp4" type="video/mp4">
+        <!-- Si el video no carga, se muestra el placeholder de abajo -->
+        <div class="video-placeholder">
+          <span>🎥</span>
+          <p>Pon aquí tu video especial</p>
+          <small>(Reemplaza "tu_video.mp4" con la URL real)</small>
+        </div>
+      </video>
+    </div>
+
+    <!-- 🎥 OPCIÓN B — YouTube (descomenta y pon tu ID de video):
+    <div class="video-wrapper">
+      <iframe height="220"
+        src="[youtube.com](https://www.youtube.com/embed/TU_VIDEO_ID?autoplay=0)"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+        allowfullscreen></iframe>
+    </div>
+    -->
+
+    <button class="btn btn-next" onclick="goTo('step6')" style="margin-top:16px;">
+      Siguiente →
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════
+       PASO 6 — Final
+  ════════════════════════════════ -->
+  <div class="section" id="step6" id="finalStep">
+    <span class="final-heart">❤️</span>
+    <h1>Te amo muchísimo 💕</h1>
+    <p id="resumenCita" style="font-size:0.95rem; color:#a0405f; margin-bottom:20px;"></p>
+    <p>Gracias por ser tú.<br>¡Ya no puedo esperar para verte! 🥰</p>
+    <br>
+    <button class="love-btn">💖 Te amoooo 💖</button>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+  /* ── Corazones cayendo ── */
+  const heartEmojis = ['❤️','💕','💗','💓','💞','🌸','✨','💝','💘','🩷'];
+  const container = document.getElementById('heartContainer');
+
+  function spawnHeart() {
+    const el = document.createElement('div');
+    el.classList.add('heart');
+    el.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    el.style.left = Math.random() * 100 + 'vw';
+    el.style.fontSize = (1 + Math.random() * 1.5) + 'rem';
+    const dur = 4 + Math.random() * 6;
+    el.style.animationDuration = dur + 's';
+    el.style.animationDelay = Math.random() * 3 + 's';
+    container.appendChild(el);
+    setTimeout(() => el.remove(), (dur + 3) * 1000);
+  }
+
+  setInterval(spawnHeart, 400);
+  for (let i = 0; i < 15; i++) spawnHeart();
+
+  /* ── Lógica del botón NO ── */
+  let noCount = 0;
+  const MAX_NO = 10;
+
+  function handleNo() {
+    if (noCount >= MAX_NO) return;
+    noCount++;
+
+    const btnYes = document.getElementById('btnYes');
+    const btnNo  = document.getElementById('btnNo');
+
+    const currentYesSize = parseFloat(btnYes.style.fontSize) || 1;
+    const currentNoSize  = parseFloat(btnNo.style.fontSize)  || 1;
+
+    btnYes.style.fontSize = (currentYesSize + 0.15) + 'rem';
+    btnYes.style.padding  = `${12 + noCount * 3}px ${28 + noCount * 5}px`;
+
+    const newNoSize = Math.max(0.4, currentNoSize - 0.08);
+    btnNo.style.fontSize = newNoSize + 'rem';
+    btnNo.style.padding  = `${Math.max(4, 12 - noCount * 1.5)}px ${Math.max(8, 20 - noCount * 2)}px`;
+    btnNo.style.opacity  = Math.max(0.3, 1 - noCount * 0.07);
+
+    if (noCount >= MAX_NO) {
+      btnNo.style.display = 'none';
+    }
+  }
+
+  function handleYes() {
+    goTo('step2');
+  }
+
+  /* ── Navegación entre pasos ── */
+  function goTo(stepId) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(stepId).classList.add('active');
+
+    if (stepId === 'step6') launchConfetti();
+  }
+
+  /* ── Selección de opciones ── */
+  function selectOpt(el, type) {
+    const grid = el.parentElement;
+    grid.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+
+    if (type === 'hora') {
+      selectedHora = el.textContent;
+      const btn = document.getElementById('btnNextHora');
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    } else {
+      selectedComida = el.textContent;
+      const btn = document.getElementById('btnNextComida');
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    }
+  }
+
+  let selectedHora   = '';
+  let selectedComida = '';
+
+  /* Rellenar resumen en el paso final */
+  function launchConfetti() {
+    document.getElementById('resumenCita').textContent =
+      `📅 Salimos a las ${selectedHora || '…'} y vamos a comer ${selectedComida || '…'} 🍽️`;
+
+    const confettiEmojis = ['🎉','✨','💕','🌸','💖','🎊'];
+    for (let i = 0; i < 18; i++) {
+      const el = document.createElement('div');
+      el.classList.add('confetti-emoji');
+      el.textContent = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+      el.style.left  = Math.random() * 100 + 'vw';
+      el.style.top   = '-60px';
+      el.style.fontSize = (1.2 + Math.random()) + 'rem';
+      el.style.animationDuration = (2 + Math.random() * 2) + 's';
+      el.style.animationDelay   = (Math.random() * 2) + 's';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 5000);
+    }
+  }
+</script>
+</body>
+</html>
